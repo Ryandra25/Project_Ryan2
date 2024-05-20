@@ -1,5 +1,7 @@
 <?php
 
+// use App\Models\Siswa;
+use App\Models\Warga;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,32 +19,63 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/about', function () {
-    $Nama = "Ryandra";
-    $Jk = "Laki - Laki";
-    $PendidikanTerakhir = "SMK";
-    $Pekerjaan = "Konveksi";
-    $Alamat = "Cangkuang Kulon";
-    return view('data_diri', compact('Nama', 'Jk', 'PendidikanTerakhir', 'Pekerjaan', 'Alamat'));
+Route::get('siswa', function () {
+    return Siswa::all();
+});
+Route::get('daftarsiswa', function () {
+    return view('daftar-siswa');
+});
+Route::get('daftarwarga', function () {
+    return view('daftar-warga');
+});
+Route::get('relasi-1', function () {
+    $mahasiswa = App\Models\Mahasiswa::where('nim', '=', '1015015072')->first();
+
+    return $mahasiswa->wali>nama;
 });
 
-Route::get('/Biodata', function () {
-    $Nama1 = "Rehan";
-    $Jk1 = "Laki - Laki";
-    $PendidikanTerakhir1 = "SMK";
-    $Pekerjaan1 = "Barista";
-    $Alamat1 = "TCI II";
-    return view('biodata', compact('Nama1', 'Jk1', 'PendidikanTerakhir1', 'Pekerjaan1', 'Alamat1'));
+Route::get('relasi-2', function () {
+    $mahasiswa = App\Models\Mahasiswa::where('nim', '=', '1015015088')->first();
+
+    return $mahasiswa->dosen>nama;
 });
 
-Route::get('/Biodata/{Nama}/{Jk}/{PT}/{P}/{alamat}', function (Request $request, $Nama, $Jk, $PT, $P, $alamat) {
-    $Nama2 = $Nama;
-    $Jk2 = $Jk;
-    $PendidikanTerakhir2 = $PT;
-    $Pekerjaan2 = $P;
-    $Alamat2 = $alamat;
-    return view('biodata2', compact('Nama2', 'Jk2', 'PT', 'P', 'Alamat2'));
+
+Route::get('relasi-3', function () {
+    $dosen = App\Models\Dosen::where('nama', '=', 'Yulianto')->first();
+
+    foreach ($dosen->mahasiswa as $data) {
+        echo "<li>Nama : <Strong>". $data->nama . "</strong>" .$data->nim. "</li>";
+    }
 });
 
+
+
+
+
+
+Route::get('relasi-4', function () {
+    $novay = App\Models\Mahasiswa::where('nama', '=', 'Noviyanto Rachmadi')->first();
+
+    foreach ($novay->hobi as $data) {
+        echo "<li>" . $data->hobi . "</li>";
+    }
+});
+
+Route::get('relasi-5', function () {
+    $mandi_hujan = App\Models\Hobi::where('hobi', '=', 'Mandi Hujan')->first();
+
+    foreach ($mandi_hujan->mahasiswa as $data) {
+        echo "<li>Nama :". $data->nama . "<Strong>" .$data->nim. "</strong></li>";
+    }
+});
+
+Route::get('eloquent', function () {
+    # Ambil semua data mahasiswa (lengkap dengan semua relasi yang ada)
+    $mahasiswa = App\Models\Mahasiswa::with('wali', 'dosen', 'hobi')->get();
+
+    # Kirim variabel ke View
+    return view('eloquent', compact('mahasiswa'));
+});
 
 
